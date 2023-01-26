@@ -18,6 +18,10 @@ bot.command("start", async (ctx) => {
     //    resize_keyboard: true,
     //  },
     //});
+    if (ctx.chat.type !== "private") {
+        await ctx.reply("Questo comando è disponibile solo in chat privata per via di una limitazione di Telegram :/");
+        return;
+    }
     if (typeof ctx.session.webhookToken === "undefined") {
         ctx.session.webhookToken = await createWebhook();
     }
@@ -43,7 +47,7 @@ bot.command("add", async (ctx) => {
         return;
     }
     let dsc = (_b = ctx.message) === null || _b === void 0 ? void 0 : _b.text.substring(lnk.length + 6);
-    let res = await fetch(API_URL + "/links", {
+    fetch(API_URL + "/links", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -52,8 +56,8 @@ bot.command("add", async (ctx) => {
             "link": lnk,
             "description": dsc
         })
-    });
-    await ctx.reply(JSON.stringify(res.json()));
+    }).then(res => ctx.reply("Link aggiunto con successo!"))
+        .catch(err => ctx.reply("Errore"));
 });
 //bot.filter(ColorPicker.match(), (ctx) => {
 //  const result = `Data from Color Picker \n\n${formatWebAppData(ctx)}`;

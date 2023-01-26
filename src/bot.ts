@@ -49,6 +49,11 @@ bot.command("start", async (ctx) => {
   //  },
   //});
 
+  if (ctx.chat.type !== "private") {
+    await ctx.reply("Questo comando è disponibile solo in chat privata per via di una limitazione di Telegram :/");
+    return;
+  }
+
   if (typeof ctx.session.webhookToken === "undefined") {
     ctx.session.webhookToken = await createWebhook();
   }
@@ -81,18 +86,17 @@ bot.command("add", async (ctx) => {
 
   let dsc = ctx.message?.text.substring(lnk.length + 6);
 
-  let res = await fetch(API_URL + "/links", {
+  fetch(API_URL + "/links", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "link": lnk,
-        "description": dsc
-        })
-    });
-
-  await ctx.reply(JSON.stringify(res.json()));
+    },
+    body: JSON.stringify({
+      "link": lnk,
+      "description": dsc
+    })
+  }).then(res => ctx.reply("Link aggiunto con successo!"))
+    .catch(err => ctx.reply("Errore"));
 
 });
 
